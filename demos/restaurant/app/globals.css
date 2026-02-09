@@ -1,0 +1,258 @@
+@import "tailwindcss";
+
+:root {
+  --background: #07080b;
+  --foreground: #f1f5f9;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: #0df2f2;
+  --color-secondary: #f20dcf;
+  --color-dark: #07080b;
+  --color-surface: #111818;
+  --color-card: #0f1515;
+  --font-sans: var(--font-plus-jakarta-sans);
+  --font-serif: var(--font-playfair-display);
+}
+
+/* ================================================================
+   Base
+   ================================================================ */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  overflow-x: hidden;
+}
+
+/* ================================================================
+   Grain overlay (film-like noise)
+   Uses an SVG feTurbulence baked into a data-URI so there's
+   zero network cost.  Sits on a fixed layer above everything
+   at very low opacity so it's felt, not seen.
+   ================================================================ */
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: overlay;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+  /* Subtle shimmer – the grain shifts slowly so it feels alive */
+  animation: grain-drift 8s steps(10) infinite;
+}
+
+@keyframes grain-drift {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-2%, -3%); }
+  20% { transform: translate(3%, 1%); }
+  30% { transform: translate(-1%, 4%); }
+  40% { transform: translate(4%, -2%); }
+  50% { transform: translate(-3%, 2%); }
+  60% { transform: translate(2%, -4%); }
+  70% { transform: translate(-4%, 3%); }
+  80% { transform: translate(1%, -1%); }
+  90% { transform: translate(3%, 4%); }
+}
+
+/* ================================================================
+   Scrollbar
+   ================================================================ */
+
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #07080b; }
+::-webkit-scrollbar-thumb { background: #1b2727; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #0df2f2; }
+
+/* ================================================================
+   Glass panel
+   ================================================================ */
+
+.glass {
+  background: rgba(17, 24, 24, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ================================================================
+   Neon utilities
+   ================================================================ */
+
+.neon-glow {
+  box-shadow:
+    0 0 20px rgba(13, 242, 242, 0.3),
+    0 0 60px rgba(13, 242, 242, 0.1);
+}
+.neon-glow-sm {
+  box-shadow: 0 0 12px rgba(13, 242, 242, 0.25);
+}
+.neon-text {
+  text-shadow: 0 0 12px rgba(13, 242, 242, 0.5);
+}
+
+/* Neon glow that pulses subtly on hover (for CTAs / cards) */
+.neon-glow-hover {
+  transition: box-shadow 0.4s ease;
+}
+.neon-glow-hover:hover {
+  box-shadow:
+    0 0 24px rgba(13, 242, 242, 0.35),
+    0 0 80px rgba(13, 242, 242, 0.12);
+}
+
+/* ================================================================
+   Focus (A11y)
+   ================================================================ */
+
+*:focus-visible {
+  outline: 2px solid #0df2f2;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ================================================================
+   Selection
+   ================================================================ */
+
+::selection { background: #0df2f2; color: #07080b; }
+
+/* ================================================================
+   Hide-scrollbar helper
+   ================================================================ */
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ================================================================
+   Keyframes
+   ================================================================ */
+
+@keyframes pulse-neon {
+  0%, 100% { opacity: 0.25; }
+  50%      { opacity: 0.6;  }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-10px); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-pulse-neon { animation: pulse-neon 4s ease-in-out infinite; }
+.animate-float      { animation: float 6s ease-in-out infinite; }
+.animate-fade-up    { animation: fade-up 0.7s ease-out both; }
+
+/* ================================================================
+   ✦ PRO: Blur placeholder for images
+   Smooth loading transition: blur → sharp
+   ================================================================ */
+
+.img-blur-load {
+  background: linear-gradient(135deg, #111818 0%, #0f1515 100%);
+}
+
+.img-blur-load img {
+  transition: filter 0.6s ease-out, opacity 0.6s ease-out;
+}
+
+.img-blur-load img[data-loaded="false"] {
+  filter: blur(20px);
+  opacity: 0.6;
+}
+
+.img-blur-load img[data-loaded="true"] {
+  filter: blur(0px);
+  opacity: 1;
+}
+
+/* ================================================================
+   ✦ PRO: Parallax depth layers
+   ================================================================ */
+
+.parallax-slow {
+  will-change: transform;
+}
+
+/* ================================================================
+   ✦ PRO: Card depth on hover
+   ================================================================ */
+
+.card-depth {
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.3s ease;
+}
+
+.card-depth:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(13, 242, 242, 0.08);
+}
+
+/* ================================================================
+   ✦ PRO: Shimmer loading effect
+   ================================================================ */
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(13, 242, 242, 0.04) 50%,
+    transparent 100%
+  );
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+/* ================================================================
+   ⚡ prefers-reduced-motion
+   ─ Kill CSS animations/transitions.
+   ─ Framer-Motion is handled globally via MotionConfig
+     (reducedMotion="user") in MotionProvider.tsx.
+   ================================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Keep grain visible but static */
+  body::after {
+    animation: none;
+  }
+}

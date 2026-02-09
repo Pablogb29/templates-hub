@@ -1,0 +1,36 @@
+{
+  "name": "templates-hub",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "dev:restaurant": "npm run dev --prefix demos/restaurant -- --port 3001",
+    "dev:salon": "npm run dev --prefix demos/hair-salon -- --port 3002",
+    "dev:dental": "npm run dev --prefix demos/dental-clinic -- --port 3003",
+    "dev:all": "concurrently -n hub,rest,salon,dental -c blue,cyan,magenta,green \"npm run dev\" \"npm run dev:restaurant\" \"npm run dev:salon\" \"npm run dev:dental\"",
+    "build": "next build",
+    "build:demos": "npm run build --prefix demos/restaurant && npm run build --prefix demos/hair-salon && npm run build --prefix demos/dental-clinic",
+    "build:all": "npm run build && npm run build:demos",
+    "start": "next start",
+    "install:demos": "cd demos/restaurant && npm install && cd ../hair-salon && npm install && cd ../dental-clinic && npm install",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "framer-motion": "^12.33.0",
+    "lucide-react": "^0.563.0",
+    "next": "^16.1.6",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "concurrently": "^9.2.1",
+    "eslint": "^9",
+    "eslint-config-next": "^16.1.6",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

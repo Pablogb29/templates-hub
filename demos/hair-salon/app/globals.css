@@ -1,0 +1,60 @@
+@import "tailwindcss";
+
+/* ============================================
+   Luna Hair Studio — Design Tokens
+   Source: Stitch Project #6574326392222752572
+   Theme: Light · Plus Jakarta Sans · Round-12 · #eebd2b
+   ============================================ */
+
+@theme inline {
+  /* --- Color Palette --- */
+  --color-primary: #eebd2b;
+  --color-primary-dark: #d4a00d;
+  --color-bg: #fcfbf8;
+  --color-bg-dark: #1b180d;
+  --color-surface: #ffffff;
+  --color-surface-alt: #221d10;
+  --color-surface-elevated: #2a261a;
+  --color-text: #1b180d;
+  --color-text-muted: #4a4638;
+  --color-beige: #f3f0e7;
+  --color-border: #e7e1cf;
+  --color-whatsapp: #25d366;
+
+  /* --- Font Families --- */
+  --font-display: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Playfair Display", ui-serif, Georgia, serif;
+
+  /* --- Border Radius --- */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+  --radius-full: 9999px;
+}
+
+/* --- Base --- */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-display);
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+}
+
+/* --- Scrollbar-hidden utility --- */
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* --- Material Symbols size override --- */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
