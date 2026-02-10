@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { type Template, getDemoIframeSrc } from "@/data/templates";
+import { type Template, getDemoConfig } from "@/data/templates";
 import {
   ArrowLeft,
   ExternalLink,
@@ -25,7 +25,7 @@ type DeviceView = "desktop" | "mobile";
 export function DemoEmbed({ template }: DemoEmbedProps) {
   const [device, setDevice] = useState<DeviceView>("desktop");
 
-  const iframeSrc = getDemoIframeSrc(template.slug);
+  const { iframeSrc, isConfigured } = getDemoConfig(template.slug);
 
   return (
     <div className="fixed inset-0 z-[60] flex h-screen flex-col bg-[var(--color-surface)]">
@@ -102,21 +102,40 @@ export function DemoEmbed({ template }: DemoEmbedProps) {
         </div>
       </div>
 
-      {/* iframe */}
+      {/* iframe or "not configured" message */}
       <div className="flex flex-1 items-center justify-center overflow-hidden bg-[#111] p-0">
-        <div
-          className="h-full transition-all duration-500"
-          style={{
-            width: device === "mobile" ? "375px" : "100%",
-            maxWidth: "100%",
-          }}
-        >
-          <iframe
-            src={iframeSrc}
-            className="h-full w-full border-0"
-            title={`${template.name} live demo`}
-          />
-        </div>
+        {!isConfigured ? (
+          <div className="flex max-w-md flex-col items-center justify-center gap-4 rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-card)] p-8 text-center">
+            <p className="text-lg font-semibold text-[var(--color-text)]">
+              Live demo not configured
+            </p>
+            <p className="text-sm text-[var(--color-text-muted)]">
+              Deploy the demo templates to Vercel and set the environment
+              variables. See <strong>DEPLOY_DEMOS.md</strong> in the repo for
+              step-by-step instructions.
+            </p>
+            <Link
+              href={`/templates/${template.slug}`}
+              className="mt-2 rounded-lg bg-[var(--color-primary)] px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-[var(--color-primary-dark)]"
+            >
+              Back to template details
+            </Link>
+          </div>
+        ) : (
+          <div
+            className="h-full transition-all duration-500"
+            style={{
+              width: device === "mobile" ? "375px" : "100%",
+              maxWidth: "100%",
+            }}
+          >
+            <iframe
+              src={iframeSrc}
+              className="h-full w-full border-0"
+              title={`${template.name} live demo`}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

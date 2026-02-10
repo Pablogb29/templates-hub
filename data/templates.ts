@@ -136,11 +136,9 @@ export function getAllSlugs(): string[] {
 /**
  * Resolve the iframe URL for a template demo.
  *
- * In development: templates run on separate ports (3001, 3002, 3003).
- * In production: set NEXT_PUBLIC_DEMO_*_URL env vars with deployed URLs.
- *
- * Each template uses `basePath: "/demos/[slug]"` so its content
- * is served at `[origin]/demos/[slug]`.
+ * - Production: set NEXT_PUBLIC_DEMO_*_URL to the full deployed URL (e.g. https://restaurant-template-xxx.vercel.app).
+ *   Standalone deployments serve at the root, so the env var is the full iframe URL.
+ * - Development: demos run on ports 3001, 3002, 3003 with basePath /demos/[slug].
  */
 const DEMO_ORIGINS: Record<string, { envKey: string; devPort: number }> = {
   restaurant: { envKey: "NEXT_PUBLIC_DEMO_RESTAURANT_URL", devPort: 3001 },
@@ -149,11 +147,27 @@ const DEMO_ORIGINS: Record<string, { envKey: string; devPort: number }> = {
 };
 
 export function getDemoIframeSrc(slug: string): string {
+  const r = getDemoConfig(slug);
+  return r.iframeSrc;
+}
+
+/** Returns iframe URL and whether the demo is configured (so the iframe will work in this environment). */
+export function getDemoConfig(slug: string): {
+  iframeSrc: string;
+  isConfigured: boolean;
+} {
   const config = DEMO_ORIGINS[slug];
-  if (!config) return "";
+  if (!config)
+    return { iframeSrc: "", isConfigured: false };
 
   const envUrl = process.env[config.envKey];
+  // Production: env var is the full URL (standalone deployment at root). Dev: localhost with basePath.
+  const iframeSrc = envUrl
+    ? envUrl.replace(/\/$/, "")
+    : `http://localhost:${config.devPort}/demos/${slug}`;
+  const isProduction =
+    typeof process !== "undefined" && process.env.NODE_ENV === "production";
+  const isConfigured = !isProduction || !!envUrl;
 
-  const origin = envUrl || `http://localhost:${config.devPort}`;
-  return `${origin}/demos/${slug}`;
+  return { iframeSrc, isConfigured };
 }
