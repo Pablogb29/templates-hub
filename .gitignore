@@ -1,7 +1,5 @@
 # dependencies
 /node_modules
-/demos/*/node_modules
-/demos/*/.next
 /.pnp
 .pnp.*
 .yarn/*

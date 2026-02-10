@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { type Template, getDemoConfig } from "@/data/templates";
+import { type Template, getDemoIframeSrc } from "@/data/templates";
 import { Button } from "@/components/ui/Button";
 import {
   Check,
@@ -27,7 +27,7 @@ type PreviewDevice = "desktop" | "mobile";
 export function TemplateDetail({ template }: TemplateDetailProps) {
   const [device, setDevice] = useState<PreviewDevice>("desktop");
   const [fullscreen, setFullscreen] = useState(false);
-  const { iframeSrc, isConfigured } = getDemoConfig(template.slug);
+  const iframeSrc = getDemoIframeSrc(template.slug);
 
   return (
     <>
@@ -63,28 +63,11 @@ export function TemplateDetail({ template }: TemplateDetailProps) {
               </button>
             </div>
           </div>
-          {isConfigured ? (
-            <iframe
-              src={iframeSrc}
-              className="h-full w-full border-0 pt-12"
-              title={`${template.name} live demo`}
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center pt-12">
-              <div className="max-w-md rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-white">
-                <p className="font-semibold">Live demo not configured</p>
-                <p className="mt-2 text-sm text-white/70">
-                  Deploy the demo templates and set env vars. See DEPLOY_DEMOS.md in the repo.
-                </p>
-                <button
-                  onClick={() => setFullscreen(false)}
-                  className="mt-4 rounded-lg bg-white/10 px-4 py-2 text-sm hover:bg-white/20"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          )}
+          <iframe
+            src={iframeSrc}
+            className="h-full w-full border-0 pt-12"
+            title={`${template.name} live demo`}
+          />
         </div>
       )}
 
@@ -248,7 +231,7 @@ export function TemplateDetail({ template }: TemplateDetailProps) {
                   </div>
                 </div>
 
-                {/* iframe container or "not configured" placeholder */}
+                {/* iframe container */}
                 <div
                   className="relative mx-auto overflow-hidden rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface-raised)] transition-all duration-500"
                   style={{
@@ -262,29 +245,12 @@ export function TemplateDetail({ template }: TemplateDetailProps) {
                       maxHeight: device === "mobile" ? "667px" : "500px",
                     }}
                   >
-                    {isConfigured ? (
-                      <iframe
-                        src={iframeSrc}
-                        className="absolute inset-0 h-full w-full border-0"
-                        title={`${template.name} live preview`}
-                        loading="lazy"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
-                        <p className="text-sm font-semibold text-[var(--color-text)]">
-                          Live demo not configured
-                        </p>
-                        <p className="text-xs text-[var(--color-text-muted)]">
-                          Deploy demo templates to Vercel and set env vars. See <strong>DEPLOY_DEMOS.md</strong> in the repo.
-                        </p>
-                        <Link
-                          href="/templates"
-                          className="rounded-lg bg-[var(--color-primary)]/20 px-4 py-2 text-xs font-medium text-[var(--color-primary-light)] hover:bg-[var(--color-primary)]/30"
-                        >
-                          View all templates
-                        </Link>
-                      </div>
-                    )}
+                    <iframe
+                      src={iframeSrc}
+                      className="absolute inset-0 h-full w-full border-0"
+                      title={`${template.name} live preview`}
+                      loading="lazy"
+                    />
                   </div>
                 </div>
               </motion.div>
