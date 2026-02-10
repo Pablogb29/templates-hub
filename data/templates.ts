@@ -157,17 +157,22 @@ export function getDemoConfig(slug: string): {
   isConfigured: boolean;
 } {
   const config = DEMO_ORIGINS[slug];
-  if (!config)
+  if (!config) {
     return { iframeSrc: "", isConfigured: false };
+  }
 
   const envUrl = process.env[config.envKey];
   // Production: env var is the full URL (standalone deployment at root). Dev: localhost with basePath.
   const iframeSrc = envUrl
     ? envUrl.replace(/\/$/, "")
     : `http://localhost:${config.devPort}/demos/${slug}`;
-  const isProduction =
-    typeof process !== "undefined" && process.env.NODE_ENV === "production";
-  const isConfigured = !isProduction || !!envUrl;
+
+  // In Vercel production, consider the demo \"configured\" as long as
+  // we're not pointing at localhost. This avoids relying on env
+  // evaluation timing and works even if the build was cached.
+  const isVercel =
+    typeof process !== "undefined" && process.env.VERCEL === "1";
+  const isConfigured = isVercel ? !iframeSrc.includes("localhost") : true;
 
   return { iframeSrc, isConfigured };
 }
