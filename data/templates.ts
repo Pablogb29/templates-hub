@@ -136,11 +136,12 @@ export function getAllSlugs(): string[] {
 /**
  * Resolve the iframe URL for a template demo.
  *
- * In development: templates run on separate ports (3001, 3002, 3003).
- * In production: set NEXT_PUBLIC_DEMO_*_URL env vars with deployed URLs.
+ * In development: templates run on separate ports (3001, 3002, 3003),
+ * and we hit them via their basePath (e.g. http://localhost:3001/demos/restaurant).
  *
- * Each template uses `basePath: "/demos/[slug]"` so its content
- * is served at `[origin]/demos/[slug]`.
+ * In production: each template is deployed at its own root domain
+ * (e.g. https://restaurant-template-tau.vercel.app), so we use the env
+ * URL as-is without appending /demos/[slug].
  */
 const DEMO_ORIGINS: Record<string, { envKey: string; devPort: number }> = {
   restaurant: { envKey: "NEXT_PUBLIC_DEMO_RESTAURANT_URL", devPort: 3001 },
@@ -154,6 +155,13 @@ export function getDemoIframeSrc(slug: string): string {
 
   const envUrl = process.env[config.envKey];
 
-  const origin = envUrl || `http://localhost:${config.devPort}`;
+  // Production: use the deployed URL directly (no suffix),
+  // assuming the template is served at the root of that domain.
+  if (envUrl) {
+    return envUrl;
+  }
+
+  // Development fallback: local demo servers with basePath
+  const origin = `http://localhost:${config.devPort}`;
   return `${origin}/demos/${slug}`;
 }
