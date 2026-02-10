@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { type Template, getDemoIframeSrc } from "@/data/templates";
 import { Button } from "@/components/ui/Button";
@@ -26,59 +26,10 @@ type PreviewDevice = "desktop" | "mobile";
 
 export function TemplateDetail({ template }: TemplateDetailProps) {
   const [device, setDevice] = useState<PreviewDevice>("desktop");
-  const [fullscreen, setFullscreen] = useState(false);
   const iframeSrc = getDemoIframeSrc(template.slug);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   return (
     <>
-      {/* Fullscreen demo overlay */}
-      {fullscreen && (
-        <div className="fixed inset-0 z-50 bg-black">
-          <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between bg-black/80 backdrop-blur-sm px-4 py-3 border-b border-white/10">
-            <div className="flex items-center gap-3">
-              <span
-                className="inline-block h-3 w-3 rounded-full"
-                style={{ backgroundColor: template.color }}
-              />
-              <span className="text-sm font-medium text-white">
-                {template.name} — Live Demo
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <a
-                href={iframeSrc}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-              >
-                <ExternalLink className="h-3 w-3" />
-                New Tab
-              </a>
-              <button
-                onClick={() => setFullscreen(false)}
-                className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-                aria-label="Exit fullscreen"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-          </div>
-          {mounted && (
-            <iframe
-              key={`${iframeSrc}-fullscreen`}
-              src={iframeSrc}
-              className="h-full w-full border-0 pt-12"
-              title={`${template.name} live demo`}
-            />
-          )}
-        </div>
-      )}
-
       <section className="pt-28 pb-24">
         <div className="mx-auto max-w-7xl px-6">
           {/* Back link */}
@@ -142,10 +93,7 @@ export function TemplateDetail({ template }: TemplateDetailProps) {
 
                 {/* CTAs */}
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                  <Button
-                    onClick={() => setFullscreen(true)}
-                    size="lg"
-                  >
+                  <Button href={`/demos/${template.slug}`} size="lg">
                     <ExternalLink className="mr-2 h-4 w-4" />
                     Full Screen Demo
                   </Button>
@@ -218,14 +166,14 @@ export function TemplateDetail({ template }: TemplateDetailProps) {
                       <Smartphone className="h-4 w-4" />
                     </button>
                     <div className="mx-1 h-4 w-px bg-[var(--color-border)]" />
-                    {/* Fullscreen */}
-                    <button
-                      onClick={() => setFullscreen(true)}
+                    {/* Fullscreen (dedicated demo route) */}
+                    <Link
+                      href={`/demos/${template.slug}`}
                       className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--color-text-dim)] transition-colors hover:bg-[var(--color-surface-hover)] hover:text-white"
                       aria-label="Fullscreen preview"
                     >
                       <Maximize2 className="h-4 w-4" />
-                    </button>
+                    </Link>
                     {/* New tab */}
                     <a
                       href={iframeSrc}
@@ -253,15 +201,12 @@ export function TemplateDetail({ template }: TemplateDetailProps) {
                       maxHeight: device === "mobile" ? "667px" : "500px",
                     }}
                   >
-                    {mounted && (
-                      <iframe
-                        key={`${iframeSrc}-inline`}
-                        src={iframeSrc}
-                        className="absolute inset-0 h-full w-full border-0"
-                        title={`${template.name} live preview`}
-                        loading="lazy"
-                      />
-                    )}
+                    <iframe
+                      src={iframeSrc}
+                      className="absolute inset-0 h-full w-full border-0"
+                      title={`${template.name} live preview`}
+                      loading="lazy"
+                    />
                   </div>
                 </div>
               </motion.div>
