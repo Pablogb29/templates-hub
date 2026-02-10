@@ -133,35 +133,31 @@ export function getAllSlugs(): string[] {
   return templates.map((t) => t.slug);
 }
 
-/**
- * Resolve the iframe URL for a template demo.
- *
- * In development: templates run on separate ports (3001, 3002, 3003),
- * and we hit them via their basePath (e.g. http://localhost:3001/demos/restaurant).
- *
- * In production: each template is deployed at its own root domain
- * (e.g. https://restaurant-template-tau.vercel.app), so we use the env
- * URL as-is without appending /demos/[slug].
- */
-const DEMO_ORIGINS: Record<string, { envKey: string; devPort: number }> = {
-  restaurant: { envKey: "NEXT_PUBLIC_DEMO_RESTAURANT_URL", devPort: 3001 },
-  "hair-salon": { envKey: "NEXT_PUBLIC_DEMO_SALON_URL", devPort: 3002 },
-  "dental-clinic": { envKey: "NEXT_PUBLIC_DEMO_DENTAL_URL", devPort: 3003 },
-};
-
 export function getDemoIframeSrc(slug: string): string {
-  const config = DEMO_ORIGINS[slug];
-  if (!config) return "";
-
-  const envUrl = process.env[config.envKey];
-
-  // Production: use the deployed URL directly (no suffix),
-  // assuming the template is served at the root of that domain.
-  if (envUrl) {
-    return envUrl;
+  // In production, use the deployed demo URLs directly.
+  if (process.env.NODE_ENV === "production") {
+    if (slug === "restaurant") {
+      return process.env.NEXT_PUBLIC_DEMO_RESTAURANT_URL || "";
+    }
+    if (slug === "hair-salon") {
+      return process.env.NEXT_PUBLIC_DEMO_SALON_URL || "";
+    }
+    if (slug === "dental-clinic") {
+      return process.env.NEXT_PUBLIC_DEMO_DENTAL_URL || "";
+    }
+    return "";
   }
 
-  // Development fallback: local demo servers with basePath
-  const origin = `http://localhost:${config.devPort}`;
-  return `${origin}/demos/${slug}`;
+  // In development, hit local demo servers with their basePath.
+  if (slug === "restaurant") {
+    return "http://localhost:3001/demos/restaurant";
+  }
+  if (slug === "hair-salon") {
+    return "http://localhost:3002/demos/hair-salon";
+  }
+  if (slug === "dental-clinic") {
+    return "http://localhost:3003/demos/dental-clinic";
+  }
+
+  return "";
 }
