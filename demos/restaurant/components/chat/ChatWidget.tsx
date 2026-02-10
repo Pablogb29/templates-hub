@@ -142,7 +142,7 @@ function renderMarkdown(text: string): React.ReactNode[] {
   let k = 0;
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    const headingMatch = line.match(/^(#{1,3})\s+(.+)$/);
+    const headingMatch = line.match(/^\s*(#{1,3})\s+(.+)$/);
     if (headingMatch) {
       const level = headingMatch[1].length;
       const content = headingMatch[2];

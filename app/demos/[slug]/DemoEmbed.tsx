@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { type Template, getDemoIframeSrc } from "@/data/templates";
 import {
@@ -26,6 +26,11 @@ export function DemoEmbed({ template }: DemoEmbedProps) {
   const [device, setDevice] = useState<DeviceView>("desktop");
 
   const iframeSrc = getDemoIframeSrc(template.slug);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className="fixed inset-0 z-[60] flex h-screen flex-col bg-[var(--color-surface)]">
@@ -111,11 +116,14 @@ export function DemoEmbed({ template }: DemoEmbedProps) {
             maxWidth: "100%",
           }}
         >
-          <iframe
-            src={iframeSrc}
-            className="h-full w-full border-0"
-            title={`${template.name} live demo`}
-          />
+          {mounted && (
+            <iframe
+              key={iframeSrc}
+              src={iframeSrc}
+              className="h-full w-full border-0"
+              title={`${template.name} live demo`}
+            />
+          )}
         </div>
       </div>
     </div>

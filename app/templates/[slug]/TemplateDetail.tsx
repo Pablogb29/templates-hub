@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { type Template, getDemoIframeSrc } from "@/data/templates";
 import { Button } from "@/components/ui/Button";
@@ -28,6 +28,11 @@ export function TemplateDetail({ template }: TemplateDetailProps) {
   const [device, setDevice] = useState<PreviewDevice>("desktop");
   const [fullscreen, setFullscreen] = useState(false);
   const iframeSrc = getDemoIframeSrc(template.slug);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <>
@@ -63,11 +68,14 @@ export function TemplateDetail({ template }: TemplateDetailProps) {
               </button>
             </div>
           </div>
-          <iframe
-            src={iframeSrc}
-            className="h-full w-full border-0 pt-12"
-            title={`${template.name} live demo`}
-          />
+          {mounted && (
+            <iframe
+              key={`${iframeSrc}-fullscreen`}
+              src={iframeSrc}
+              className="h-full w-full border-0 pt-12"
+              title={`${template.name} live demo`}
+            />
+          )}
         </div>
       )}
 
@@ -245,12 +253,15 @@ export function TemplateDetail({ template }: TemplateDetailProps) {
                       maxHeight: device === "mobile" ? "667px" : "500px",
                     }}
                   >
-                    <iframe
-                      src={iframeSrc}
-                      className="absolute inset-0 h-full w-full border-0"
-                      title={`${template.name} live preview`}
-                      loading="lazy"
-                    />
+                    {mounted && (
+                      <iframe
+                        key={`${iframeSrc}-inline`}
+                        src={iframeSrc}
+                        className="absolute inset-0 h-full w-full border-0"
+                        title={`${template.name} live preview`}
+                        loading="lazy"
+                      />
+                    )}
                   </div>
                 </div>
               </motion.div>
